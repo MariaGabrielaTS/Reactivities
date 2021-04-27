@@ -1,18 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using API.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Persistence;
 
 namespace API
 {
@@ -30,28 +21,8 @@ namespace API
         {
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-            });
-
-            services.AddDbContext<DataContext>(opt =>
-            {
-                opt.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-            });
-
-            /* CORS Policy 
-                |This cause is required when we're trying to access a resource from a different domain
-                | Example: Our client-app is runing on port 3000 which is a different domain to our API server port 5000
-            */
-            services.AddCors(opt => {
-                opt.AddPolicy("CorsPolicy", policy => {
-                    /* By adding a CORS Policy, what we're going to return is a header with our response that says 
-                       we're allows you use any method, get posts, put options, etc. We're allow any header, but we're
-                       going to make sure it's with origins from our client app */
-                    policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
-                });
-            });
+            // Call ApplicationServiceExtensions file created to mantain startup class as neat as possible
+            services.AddApplicationServices(_config);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
